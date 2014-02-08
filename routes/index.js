@@ -1,8 +1,20 @@
-
 /*
  * GET home page.
  */
 var cclog = require('cclog');
+
+var redisPool = {};
+
+function getClient(port, host, db) {
+  var key = host + ':' + port + ':' + db;
+  var client = redisPool[key];
+  if(!client) {
+    client = redisPool[key] = require('redis').createClient(port, host);
+    client.select(db);
+  }
+  return client;
+}
+
 exports.index = function(req, res){
     var query = req.query || {};
     var key = query.key || '';
@@ -11,10 +23,14 @@ exports.index = function(req, res){
     var count = query.count || 20;
     var cursor = query.cursor || 0;
     var match = search ? '*' + search + '*' : '*';
+    var host = query.host || 'localhost';
+    var port = parseInt(query.port) || 6379;
+    var db = parseInt(query.db) || 0;
+    var redis = getClient(port, host, db);
+    var usescan = query.usescan;
 
-    var oldscan = true;
     function myscan(scantype, cursor, match, count, callback) {
-        if(oldscan) {
+        if(!usescan) {
             function _callback(err, results) {
                 callback(err, [0, results]);
             }
@@ -38,17 +54,24 @@ exports.index = function(req, res){
                 return redis.keys(match, _callback);
             }
         } else {
+            if(scantype == 'scan') {
+                return redis.scan(cursor, 'match', match, 'count', count, callback)
+            }
             redis[scantype](key, cursor, 'match', match, 'count', count, callback)
         }
     }
 
     function render(options) {
         var params = {
-            cursor: cursor
+            prevcursor: cursor
           , search: search
           , op: op
           , count: count
           , key: key
+          , host: host
+          , port: port
+          , db: db
+          , usescan: usescan
         }
         for(var k in options) {
             params[k] = options[k];

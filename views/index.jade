@@ -1,19 +1,50 @@
 extends layout
 
+
 block content
-  h3= title
-  form(action='/', method='get')
-    input(name='search')
-    button(type='submit') Search
-  h4 #{key}
-  h4 Type: #{type}
-  h4 Value: #{value}
-  a(href='?search=#{key}&cursor=0&count=#{count}') Search by #{key}
-  p total:#{len}
-  p items:#{results.length}
-  table
-    each key in results
-      tr
-        td: a(href='?key=#{key}') #{_v(key)}
-  p
-  a(href='?key=#{key}&cursor=#{cursor}&count=#{count}&search=#{search}') Next Page
+  - var base = 'host=' + host + '&port=' + port + '&db=' + db + '&usescan=' + usescan;
+  .container
+    .row
+      .col-md-8
+        h3= title
+        if key
+          h4 Key: #{key}
+          h4 Type: #{type}
+          h4 Value: #{value}
+          a(href='?search=#{key}&cursor=0&count=#{count}&#{base}') Search by #{key}
+        if search
+          h4 Search result of #{search}
+        p total:#{len}
+        p items:#{results.length}
+        table
+          each key in results
+            tr
+              td: a(href='?key=#{key}&#{base}') #{_v(key)}
+        ul.pagination
+          //- li: a(href='?key=#{key}&cursor=#{prevcursor}&count=#{count}&search=#{search}&#{base}') Prev
+          if cursor != 0
+            li: a(href='?key=#{key}&cursor=#{cursor}&count=#{count}&search=#{search}&#{base}') Next(#{cursor})
+      .col-md-4
+        form(action='/', method='get')
+          .form-group
+            label Host
+            input.form-control(name='host', value=host)
+          .form-group
+            label Port
+            input.form-control(name='port', value=port)
+          .form-group
+            label Database
+            input.form-control(name='db', value=db)
+          .checkbox
+            label
+              input(type='checkbox', name='usescan', checked=usescan)
+              | Redis version >= 2.8.0
+          .form-group
+            label Keyword
+            .input-group
+              input.form-control(name='search', placeholder='Search', value=search)
+              .input-group-btn
+                button.btn.btn-primary(type='submit') Search
+
+        .well
+          | More to do...
