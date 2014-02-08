@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  h3= title
+  form(action='/', method='get')
+    input(name='search')
+    button(type='submit') Search
+  h4 #{key}
+  h4 Type: #{type}
+  h4 Value: #{value}
+  a(href='?search=#{key}&cursor=0&count=#{count}') Search by #{key}
+  p total:#{len}
+  p items:#{results.length}
+  table
+    each key in results
+      tr
+        td: a(href='?key=#{key}') #{_v(key)}
+  p
+  a(href='?key=#{key}&cursor=#{cursor}&count=#{count}&search=#{search}') Next Page
