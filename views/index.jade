@@ -22,7 +22,7 @@ block content
               td: a(href='?key=#{key}&#{base}') #{_v(key)}
         ul.pagination
           //- li: a(href='?key=#{key}&cursor=#{prevcursor}&count=#{count}&search=#{search}&#{base}') Prev
-          if cursor != 0
+          if cursor != 0 && results.length > 0
             li: a(href='?key=#{key}&cursor=#{cursor}&count=#{count}&search=#{search}&#{base}') Next(#{cursor})
       .col-md-4
         form(action='/', method='get')
