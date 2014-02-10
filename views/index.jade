@@ -37,8 +37,8 @@ block content
             input.form-control(name='db', value=db)
           .checkbox
             label
-              input(type='checkbox', name='usescan', checked=usescan)
-              | Redis version >= 2.8.0
+              input(type='checkbox', name='usescan', checked=!!usescan)
+              | SCAN, SSCAN, LSCAN, ZSCAN, HSCAN
           .form-group
             label Keyword
             .input-group

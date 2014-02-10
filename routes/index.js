@@ -27,7 +27,7 @@ exports.index = function(req, res){
     var port = parseInt(query.port) || 6379;
     var db = parseInt(query.db) || 0;
     var redis = getClient(port, host, db);
-    var usescan = query.usescan;
+    var usescan = query.usescan || '';
 
     function myscan(scantype, cursor, match, count, callback) {
         if(!usescan) {
