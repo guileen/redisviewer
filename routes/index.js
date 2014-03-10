@@ -2,6 +2,7 @@
  * GET home page.
  */
 var cclog = require('cclog');
+var async = require('async');
 
 var redisPool = {};
 
@@ -81,6 +82,14 @@ exports.index = function(req, res){
 
     if(key) {
         redis.type(key, function(err, type) {
+                if(op == 'del') {
+                  return redis.del(key, function(err, results) {
+                      render({
+                          type: type
+                        , message: 'Deleted ' + key
+                      })
+                  });
+                }
                 function scan(scantype) {
                     return function (err, len) {
                         if(err) return cclog.error(err);
@@ -123,10 +132,20 @@ exports.index = function(req, res){
     } else {
         return myscan('scan', cursor, match, count, function (err, results) {
                 if(err) return cclog.error(err);
-                render({
-                        cursor: results[0]
-                      , results: results[1]
-                })
+                if(op == 'delall' && results) {
+                  async.each(results[1], function(key, callback) {
+                      redis.del(key, callback);
+                    }, function(err, data) {
+                      render({
+                          message: 'Delete ' + results[1].length + ' results'
+                      })
+                  });
+                } else {
+                  render({
+                      cursor: results[0]
+                    , results: results[1]
+                  })
+                }
         })
     }
 };
