@@ -21,11 +21,13 @@ block content
           table
             tr
               td items:#{results && results.length}
-              td: a(href='?key=#{key}&cursor=#{cursor}&count=#{count}&search=#{search}&#{base}&op=delall') Del All
+              if allowdel
+                td: a(href='?key=#{key}&cursor=#{cursor}&count=#{count}&search=#{search}&#{base}&op=delall') Del All
             each key in results
               tr
                 td: a(href='?key=#{key}&#{base}') #{_v(key)}
-                td: a(href='?key=#{key}&#{base}&op=del') Del
+                if allowdel
+                  td: a(href='?key=#{key}&#{base}&op=del') Del
           ul.pagination
             //- li: a(href='?key=#{key}&cursor=#{prevcursor}&count=#{count}&search=#{search}&#{base}') Prev
             if cursor != 0 && results.length > 0

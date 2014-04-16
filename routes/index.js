@@ -73,6 +73,7 @@ exports.index = function(req, res){
           , port: port
           , db: db
           , usescan: usescan
+          , allowdel: query.allowdel
         }
         for(var k in options) {
             params[k] = options[k];
